@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Travel Planner App">
+  <meta name="keywords" content="Travel, Planner, App">
+  <meta name="author" content="Gbenga Oso">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Planner App</title>
+  <!-- favicon file -->
+  <link rel="icon" type="image/x-icon" href="./media/favicon.ico">
+<link href="main.css" rel="stylesheet"></head>
+
+<body>
+  <div id="app">
+    <div class="ui-header">
+      <div class="masthead">
+        <img class="app-icon" src="./media/app-icon.png">
+        <h1 class="app-name">Travel Planner</h1>
+      </div>
+      <div class="widget-area">
+        <span class="my-trips">My Trips</span>
+        <button class="add-trip-toggle"><i class="fa fa-toggle-off"></i> Add a trip</button>
+      </div>
+    </div>
+    <div class="ui-body">
+      <div class="app-start">
+        <div class="no-trips">
+          <p>No Trips Added</p>
+          <button class="add-trip-btn" type="button">Add a trip</button>
+        </div>
+      </div>
+      <form class="add-trip-form hidden">
+        <div>
+          <button class="close-form-btn" type="button">X</button>
+          <label for="city"><i class="fa fa-globe" aria-hidden="true"></i> Destination</label>
+          <input id="city" name="destination-city" type="text" placeholder="Which city do you want to visit?">
+          <label for="date"><i class="fa fa-calendar" aria-hidden="true"></i> Departing</label>
+          <input id="date" name="trip-start" type="date">
+          <button class="search-btn" type="submit"><i class="fa fa-search"></i></button>
+          <div id="spinner"></div>
+        </div>
+        <div class="graphic">
+        </div>
+      </form>
+      <div id="search-result">
+        <div class="trip-data"></div>
+      </div>
+      <div class="ui-footer">
+        <!-- The Scroll to the Top button when clicked returns the user to the top of the page -->
+        <button id="scroll-to-top" title="Scroll to top" role="button"><i class="fa fa-chevron-up" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+<script type="text/javascript" src="main.js"></script></body>
+
+</html>

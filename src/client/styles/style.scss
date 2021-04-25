@@ -1,0 +1,468 @@
+// import stylesheet for the spin.js activity indicator
+@import url(../../../node_modules/spin.js/spin.css);
+* {
+  box-sizing: inherit;
+  &:before {
+    box-sizing: inherit;
+  }
+  &:after {
+    box-sizing: inherit;
+  }
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 20px 20px 0;
+}
+
+footer {
+  align-items: center;
+  display: flex;
+  font-size: 14px;
+  justify-content: center;
+  min-height: 100px;
+}
+
+a {
+  color: #00b7ff;
+}
+
+.ui-body {
+  background: #dbeef2;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  margin-bottom: 1em;
+  min-height: 350px;
+  padding: 1em 15px 0;
+  .add-trip-btn,
+  .search-btn {
+    background-color: #1484e8;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    font-size: 18px;
+    margin-bottom: 1em;
+    padding: 14px 26px;
+    &:active {
+      &:hover {
+        background-color: #389bf2;
+      }
+    }
+    &:hover {
+      background-color: #389bf2;
+    }
+  }
+  .add-trip-form {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px #666;
+    display: block;
+    margin-bottom: 1em;
+    padding: 10px 15px 10px;
+    width: 100%;
+    &.hidden {
+      display: none;
+    }
+  }
+  .app-start {
+    background-color: #dbeef2;
+    background-image: url(../media/app-start-bg.png);
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: contain;
+    .no-trips {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      font-size: 24px;
+      justify-content: flex-start;
+      min-height: 320px;
+      width: 100%;
+    }
+  }
+  .close-form-btn {
+    background-color: #1484e8;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    padding: 3px 8px;
+    position: relative;
+    right: -1em;
+    top: -1em;
+    &:hover {
+      background-color: #389bf2;
+    }
+  }
+  .fa.fa-search {
+    font-size: 18px;
+  }
+  .search-btn {
+    margin-top: 1em;
+  }
+  input {
+    margin-bottom: 0.5em;
+    &:focus {
+      outline-color: #1484e8;
+      outline-width: 1px;
+    }
+  }
+  input[type="date"] {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    color: #666;
+    font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+  }
+  input[type="text"] {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    color: #666;
+    font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    &::placeholder {
+      color: #666;
+    }
+  }
+  label {
+    color: #666;
+    display: block;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    .fa {
+      padding: 2px;
+    }
+    .fa.fa-calendar-check-o {
+      font-size: 16px;
+    }
+    .fa.fa-globe {
+      font-size: 18px;
+    }
+  }
+}
+
+.ui-header {
+  button {
+    &:focus {
+      outline-color: #1484e8;
+      outline-style: dotted;
+      outline-width: 1px;
+    }
+  }
+  .add-trip-toggle {
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 14px;
+  }
+  .fa.fa-toggle-off {
+    background-color: transparent;
+    color: #fff;
+  }
+  .fa.fa-toggle-on {
+    background-color: transparent;
+    color: #fff;
+  }
+  .masthead {
+    align-items: center;
+    display: flex;
+    .app-icon {
+      width: 40px;
+    }
+    .app-name {
+      color: #333;
+      display: inline-block;
+      font-size: 1.8em;
+      font-weight: 400;
+      padding: 0 10px;
+    }
+  }
+  .widget-area {
+    align-items: center;
+    background-color: #1484e8;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: #fff;
+    display: flex;
+    font-size: 20px;
+    justify-content: space-between;
+    padding: 8px 10px;
+  }
+}
+
+#scroll-to-top {
+  background-color: #1484e8;
+  border: none;
+  border-radius: 50%;
+  bottom: 20px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 24px;
+  height: 60px;
+  padding: 15px;
+  position: fixed;
+  right: 5%;
+  width: 60px;
+  z-index: 6;
+  &:hover,
+  &:active {
+    border: 4px solid #fff;
+  }
+}
+
+#search-result {
+  .control-btns {
+    .remove-btn {
+      color: #f53649;
+      cursor: pointer;
+      font-weight: 700;
+      &:hover,
+      &:active {
+        background-color: #dbeef2;
+        border-color: red;
+        color: red;
+      }
+      &.hidden {
+        display: none;
+      }
+    }
+    .save-btn {
+      color: #008b2a;
+      cursor: pointer;
+      font-weight: 700;
+      &:hover,
+      &:active {
+        background-color: #dbeef2;
+        border-color: #00902c;
+        color: #00902c;
+      }
+      &.hidden {
+        display: none;
+      }
+    }
+    button {
+      background-color: transparent;
+      border: 1px solid #999;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      font-size: 14px;
+      margin: 10px 10px 10px 0;
+      padding: 10px;
+    }
+  }
+  .trip-data {
+    display: block;
+    font-size: 16px;
+    line-height: 1.4;
+    .control-btns {
+      display: inline;
+      margin-top: 0.5em;
+    }
+    .countdown {
+      margin-top: 0.5em;
+    }
+    .departure-date {
+      color: #333;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .no-weather {
+      font-size: 14px;
+    }
+    .trip-description {
+      background: #fafafa;
+      padding: 0 10px;
+    }
+    .status {
+      box-shadow: transparent 0 0 0 2px;
+      box-sizing: border-box;
+      color: #000;
+      display: inline-block;
+      font-weight: 500;
+      line-height: 1;
+      padding: 10px 10px 10px 0;
+      text-align: center;
+      vertical-align: middle;
+      &.hidden {
+        display: none;
+      }
+      .fa-check-circle {
+        color: #23c552;
+        font-size: 1.1em;
+      }
+    }
+    .title {
+      color: #333;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 10px 0 0;
+    }
+    .weather {
+      margin-bottom: 0.5em;
+      margin-top: 0.5em;
+    }
+    .weather-description {
+      align-items: center;
+      display: flex;
+      font-size: 14px;
+      position: relative;
+      top: -5px;
+      img {
+        padding-left: 5px;
+      }
+    }
+    .weather-temp {
+      font-size: 14px;
+      .high,
+      .low {
+        display: inline-block;
+        font-weight: 700;
+      }
+    }
+    li {
+      border: 2px solid #dbeef2;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    span {
+      display: block;
+    }
+    ul {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px #666;
+      list-style-type: none;
+      margin-bottom: 1em;
+      padding: 10px;
+      &.hidden {
+        display: none;
+      }
+    }
+  }
+}
+
+#spinner {
+  position: relative;
+}
+
+@media only screen and (min-width: 600px) and (max-width: 900px) {
+  body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+  }
+  .ui-body {
+    padding-left: 20px;
+    padding-right: 20px;
+    input[type="date"],
+    input[type="text"] {
+      width: 90%;
+    }
+    .app-start {
+      .no-trips {
+        align-items: flex-start;
+        justify-content: center;
+        padding-left: 80px;
+      }
+    }
+  }
+  .ui-header {
+    .masthead {
+      .app-icon {
+        width: 50px;
+      }
+    }
+    .widget-area {
+      font-size: 22px;
+    }
+  }
+  #scroll-to-top {
+    height: 70px;
+    right: 5%;
+    width: 70px;
+  }
+  #search-result {
+    .trip-data {
+      li {
+        display: grid;
+        grid-gap: 0 1em;
+        grid-template-areas: "image trip" "image controls";
+        grid-template-columns: repeat(2, 1fr);
+      }
+      ul {
+        padding: 10px;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 901px) {
+  body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+  }
+  .ui-body {
+    padding: 30px 20px;
+    input[type="date"],
+    input[type="text"] {
+      width: 80%;
+    }
+    .add-trip-form {
+      background: #fff;
+      box-shadow: 0 1px 2px #666;
+      display: block;
+      margin-bottom: 1em;
+      padding: 20px;
+    }
+    .app-start {
+      background-position: 80% bottom;
+      .no-trips {
+        font-size: 28px;
+        justify-content: center;
+        margin-right: 20%;
+        width: auto;
+      }
+    }
+  }
+  .ui-header {
+    .widget-area {
+      font-size: 24px;
+    }
+  }
+  #search-result {
+    .trip-data {
+      li {
+        display: grid;
+        grid-gap: 0 1em;
+        grid-template-areas: "image trip" "image controls";
+        grid-template-columns: repeat(2, 1fr);
+      }
+      ul {
+        padding: 15px;
+      }
+    }
+  }
+  #scroll-to-top {
+    height: 70px;
+    right: 20%;
+    width: 70px;
+  }
+}
