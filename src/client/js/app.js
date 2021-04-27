@@ -2,7 +2,9 @@
  * Import statements
  */
 
-// Load spin.js library for animated progress indicator
+ import 'regenerator-runtime/runtime'
+
+// Load spin.js for animated progress indicator. Comment out when running Jest tests because of conflicts
 import { Spinner } from 'spin.js'
 
 /**
@@ -32,12 +34,16 @@ const formatDate = (rawDate) => {
     return formattedDate
 }
 
-// Set minimum departure date (i.e., disable past dates)
-const setMinDate = () => {
+const getTodaysDate = () => {
     const today = new Date()
     const timeZoneOffset = today.getTimezoneOffset() * 60000
     const todayISOString = (new Date(Date.now() - timeZoneOffset)).toISOString().split('T')[0]
-    document.querySelector('#date').setAttribute('min', todayISOString)
+    return todayISOString
+}
+
+// Set earliest departure date on date picker
+const setMinDate = () => {
+    document.querySelector('#date').setAttribute('min', getTodaysDate())
 }
 
 // Countdown to departure date
@@ -332,8 +338,14 @@ const removeTrip = (index, obj) => {
 }
 
 export {
+    getTodaysDate,
+    setMinDate,
+    formatDate,
+    countDown,
     toggleForm,
     scrollToTopOnClick,
+    getCityCoord,
+    getWeather,
     addTrip,
     saveTrip,
     removeTrip,
