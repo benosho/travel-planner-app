@@ -65,11 +65,11 @@ A Node.js an travel planner app that creates profiles for planned travel destina
 ### View the app in your browser at http://localhost:5000
 
 ## Deployment
-The NLP News Article Evaluator App is hosted for demonstration purposes at https://ngw-sentiment-analysis-app.herokuapp.com/
+The Travel Planner App is hosted for demonstration purposes at https://ngw-travel-planner-app.herokuapp.com/
 
 ## Release History
 - 1.0.0
-    - First release - 26 Apr 2021
+    - First release - 27 Apr 2021
 
 ## About this Project
 This project is a requirement on the [Udacity Frontend Developer Nanodegree program](https://www.udacity.com/course/front-end-web-developer-nanodegree--nd0011/)
