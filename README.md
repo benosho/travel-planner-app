@@ -62,7 +62,8 @@ A Node.js an travel planner app that creates profiles for planned travel destina
 
 `npm run start`
 
-### View the app in your browser at http://localhost:5000
+### View the app in your browser at:
+http://localhost:5000
 
 ## Deployment
 The Travel Planner App is hosted for demonstration purposes at https://ngw-travel-planner-app.herokuapp.com/
