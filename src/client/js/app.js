@@ -107,7 +107,7 @@ function scrollToTopOnClick() {
 }
 
 // GET request to GeoNames API
-const getCityCoord = async (cityName = '', url = 'http://api.geonames.org/search?', apiID = process.env.API_ID_GEONAMES) => {
+const getCityCoord = async (cityName = '', url = 'https://secure.geonames.org/search?', apiID = process.env.API_ID_GEONAMES) => {
     const apiResponse = await fetch(url + 'name_equals=' + cityName + '&type=json' + '&username=' + apiID)
     try {
         const cityData = await apiResponse.json()
