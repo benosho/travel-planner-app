@@ -1,8 +1,8 @@
 # Travel Planner App
-A Node.js an travel planner app that creates profiles for planned travel destinations from data drawn pulled rom various APIs.
+A Node.js travel planner app that creates profiles for planned travel destinations from data drawn pulled from various APIs.
 
 ## Features
-- Captures user inputs for travel destinations and creates profiles comprising of the following:
+- Captures user inputs for travel destinations and builds profiles comprising of the following:
     - Travel destination: City, Country
     - Featured image of the city. Where this is not available a featured image of the country is displayed
     - Typical weather for the planned departure date where this is available
