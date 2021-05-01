@@ -14,6 +14,12 @@ module.exports = {
         libraryTarget: 'var',
         library: 'Client',
     },
+    mode: 'development',
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 8080,
+      },
     mode: 'production',
     module: {
         rules: [

@@ -1,12 +1,13 @@
 {
-  "name": "travel-app",
+  "name": "travel-planner-app",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "start": "node src/server/server.js",
     "build-prod": "webpack --config webpack.prod.js",
-    "build-dev": "webpack-dev-server  --config webpack.dev.js --open"
+    "build-dev": "webpack-dev-server  --config webpack.dev.js --open",
+    "smart": "webpack --config webpack.prod.js & npm start"
   },
   "keywords": [
     "express node.js",
@@ -24,8 +25,11 @@
   "description": "",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "open": "^8.0.7",
     "spin.js": "^4.1.0",
+    "uuid": "^8.3.2",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.5"
   },

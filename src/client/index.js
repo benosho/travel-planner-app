@@ -11,6 +11,7 @@ toggleForm()
 scrollToTopOnClick()
 addTrip()
 showSavedTrips()
+//testGet()
 
 export {
     saveTrip,

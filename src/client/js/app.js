@@ -1,25 +1,26 @@
 /**
- * Import statements
+ * Load required modules
  */
-
- import 'regenerator-runtime/runtime'
 
 // Load spin.js for animated progress indicator. Comment out when running Jest tests because of conflicts
 import { Spinner } from 'spin.js'
+
+// Load UUID for unique ID generation
+const { v4: uuidv4 } = require('uuid')
+
+import 'regenerator-runtime/runtime'
 
 /**
  * Global Variables
  */
 
-let addedTrips = localStorage.getItem('temp') ? JSON.parse(localStorage.getItem('temp')) : [] // Array of added trips
-let savedTrips = localStorage.getItem('trips') ? JSON.parse(localStorage.getItem('trips')) : [] // Array of saved trips
+let addedTrips = []
 
 
 /**
  * Helper functions
  */
 
-// Load spinner (i.e., animated progress indicator)
 const uiSpinner = () => {
     const spinnerEl = document.querySelector('#spinner')
     const spinner = new Spinner({ color: '#1484e8', scale: 1.2 }).spin(spinnerEl)
@@ -34,6 +35,7 @@ const formatDate = (rawDate) => {
     return formattedDate
 }
 
+// Get today's date
 const getTodaysDate = () => {
     const today = new Date()
     const timeZoneOffset = today.getTimezoneOffset() * 60000
@@ -57,7 +59,7 @@ const countDown = (departureDate) => {
     return daysToDeparture
 }
 
-// Toggle the "add trip" form
+// Toggle the search form
 const toggleForm = () => {
     const appStart = document.querySelector('.app-start')
     const addTripForm = document.querySelector('.add-trip-form')
@@ -85,7 +87,7 @@ const toggleForm = () => {
     })
 }
 
-// Scroll to the top of viewport when floating button is clicked:
+// Scroll page to the top of viewport when floating button is clicked:
 function scrollToTopOnClick() {
     const scrollBtn = document.querySelector('#scroll-to-top')
     scrollBtn.hidden = true
@@ -156,26 +158,25 @@ const getFeaturedImg = async (cityName = '', countryName = '', url = 'https://pi
     }
 }
 
-// Update UI with travel data
-const updateUI = async (featuredImgURL, cityName, countryName, departureDate, daysToDeparture, weatherForecast, update) => {
+// Update UI with query results
+const updateUI = async (featuredImgURL, cityName, countryName, departureDate, daysToDeparture, weatherForecast, ui, arrIndex = '') => {
     try {
-        addedTrips.push({ city: cityName, country: countryName, departing: departureDate, weather: weatherForecast })
         let uiContent = `<div class="featured-img"><img src="${featuredImgURL}" width="100%"></div>`
         uiContent += `<div class="trip-description"><span class="title">My trip to: ${cityName}, ${countryName}</span>`
         uiContent += `<span class="departure-date">Departing: ${formatDate(departureDate)}</span>`
-        if (update.data === "search") {
+        if (ui.view === "unsaved") {
             uiContent += `<span class="status hidden"><i class="fa fa-check-circle" aria-hidden="true"></i> Saved</span>`
         }
         else {
             uiContent += `<span class="status"><i class="fa fa-check-circle" aria-hidden="false"></i> Saved</span>`
         }
-        uiContent += `<span class="control-btns">`
-        if (update.data === "search") {
+        uiContent += `<span class="btns-panel">`
+        if (ui.view === "unsaved") {
             uiContent += `<button class="save-btn" type="button" onclick="Client.saveTrip(${addedTrips.length - 1}, this)">Save trip</button>`
-            uiContent += `<button class="remove-btn hidden" type="button" onclick="Client.removeTrip(${addedTrips.length - 1}, this)">Remove trip</button>`
+            uiContent += `<button class="remove-btn hidden" type="button" onclick="Client.removeTrip(this)">Remove trip</button>`
         }
         else {
-            uiContent += `<button class="remove-btn" type="button">Remove trip</button>`
+            uiContent += `<button class="remove-btn" type="button" onclick="Client.removeTrip(this)">Remove trip</button>`
         }
         uiContent += `</span>`
         if (daysToDeparture >= 0) {
@@ -193,9 +194,19 @@ const updateUI = async (featuredImgURL, cityName, countryName, departureDate, da
             uiContent += `<span class="no-weather"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> No forecast available at this time for your departure date</span>`
         }
         uiContent += `</div>`
+        const list = document.createElement('ul')
+        list.setAttribute('class', 'record')
         const listItem = document.createElement('li')
         listItem.setAttribute('class', 'destination')
-        const list = document.createElement('ul')
+        if (ui.view === "unsaved") {
+            listItem.setAttribute('data-item', uuidv4())
+        }
+        else {
+            getData('/data')
+                .then(data => {
+                    listItem.setAttribute('data-item', data[arrIndex].uid)
+                })
+        }
         listItem.innerHTML = uiContent
         list.appendChild(listItem)
         return list
@@ -205,11 +216,42 @@ const updateUI = async (featuredImgURL, cityName, countryName, departureDate, da
     }
 }
 
+// POST request to local server
+const postData = async (url = '', data = {}) => {
+    const response = await fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    try {
+        const data = await response.json();
+        return data;
+    }
+    catch (err) {
+        console.log('ERROR:', err.message);
+    }
+}
+
+// GET request to local server
+const getData = async (url = '') => {
+    const response = await fetch(url);
+    try {
+        const data = await response.json();
+        return data;
+    }
+    catch (err) {
+        console.log('Error:', err.message);
+    }
+}
+
 /**
  * Main functions
  */
 
-// Add a trip with option to save
+// Query external APIs for travel destinations
 const addTrip = () => {
     let daysToDeparture = ''
     const addTripForm = document.querySelector('.add-trip-form')
@@ -234,10 +276,11 @@ const addTrip = () => {
                                 getFeaturedImg(coord.geonames[0].name, coord.geonames[0].countryName)
                                     .then((featuredImgURL) => {
                                         if (featuredImgURL) {
-                                            updateUI(featuredImgURL, coord.geonames[0].name, coord.geonames[0].countryName, departureDate, daysToDeparture, weatherForecast, { data: "search" })
-                                                .then((tripEl) => {
+                                            addedTrips.push({ city: coord.geonames[0].name, country: coord.geonames[0].countryName, departing: departureDate, weather: weatherForecast })
+                                            updateUI(featuredImgURL, coord.geonames[0].name, coord.geonames[0].countryName, departureDate, daysToDeparture, weatherForecast, { view: "unsaved" })
+                                                .then((data) => {
                                                     const tripData = document.querySelector('.trip-data')
-                                                    tripData.appendChild(tripEl)
+                                                    tripData.appendChild(data)
                                                     tripData.lastElementChild.scrollIntoView({ behavior: 'smooth' })
                                                     spinner.stop()
                                                 })
@@ -257,76 +300,60 @@ const addTrip = () => {
     })
 }
 
-// Show saved trips
-const showSavedTrips = () => {
-    const appStart = document.querySelector('.app-start')
-
-    if (addedTrips.length > 0) {
-        addedTrips.forEach((trip) => {
-            if (trip.action === 'save') {
-                savedTrips.push(trip)
-            }
-            localStorage.setItem('trips', JSON.stringify(savedTrips))
-        })
-        localStorage.removeItem('temp')
-    }
-    if (savedTrips.length > 0) {
-        appStart.hidden = true
-        const spinner = uiSpinner()
-        savedTrips.forEach((trip, index) => {
-            trip.oldIndex = index
-
-            // Fetch image URL each time. Pixabay API does not support permanent hotlinking.
-            getFeaturedImg(trip.city, trip.country)
-                .then((imgURL) => {
-                    const daysToDeparture = countDown(trip.departing)
-                    updateUI(imgURL, trip.city, trip.country, trip.departing, daysToDeparture, trip.weather, { data: "saved" })
-                        .then((tripEl) => {
-                            const tripData = document.querySelector('.trip-data')
-                            tripData.appendChild(tripEl)
-                            const removeBtns = document.querySelectorAll('.remove-btn')
-                            removeBtns[removeBtns.length - 1].addEventListener('click', () => {
-                                savedTrips.forEach((trip, index) => {
-                                    if (trip.oldIndex === (removeBtns.length - 1)) {
-                                        savedTrips.splice(index, 1)
-                                        localStorage.setItem('trips', JSON.stringify(savedTrips))
-                                    }
-                                    removeBtns[removeBtns.length - 1].parentNode.parentNode.parentNode.parentNode.hidden = true
-                                    removeBtns[removeBtns.length - 1].parentNode.parentNode.parentNode.parentNode.remove()
-                                    if (document.querySelectorAll('.destination').length === 0) {
-                                        appStart.hidden = false
-                                    }
-                                    else {
-                                        appStart.hidden = true
-                                    }
-                                })
+// Show saved destinations
+const showSavedTrips = async () => {
+    const savedTrips = await getData('/data')
+    try {
+        const appStart = document.querySelector('.app-start')
+        if (savedTrips.length > 0) {
+            appStart.hidden = true
+            const spinner = uiSpinner()
+            savedTrips.forEach((trip, index) => {
+                getFeaturedImg(trip.city, trip.country)
+                    .then((imgURL) => {
+                        const daysToDeparture = countDown(trip.departing)
+                        updateUI(imgURL, trip.city, trip.country, trip.departing, daysToDeparture, trip.weather, { view: "saved" }, index)
+                            .then((data) => {
+                                const tripData = document.querySelector('.trip-data')
+                                tripData.appendChild(data)
+                                spinner.stop()
                             })
-                        })
-                    spinner.stop()
-                })
+                    })
+            })
+        }
+        else {
+            appStart.hidden = false
+        }
+    }
+    catch (err) {
+        console.log("Error:", err.message)
+    }
+}
+
+// Save a destination to the local server
+const saveTrip = (index, thisBtn) => {
+    thisBtn.classList.add('hidden')
+    thisBtn.parentNode.parentNode.getElementsByClassName('status hidden')[0].classList.remove('hidden')
+    const removeBtn = thisBtn.parentNode.getElementsByClassName('remove-btn')[0]
+    removeBtn.classList.remove('hidden')
+    addedTrips[index].uid = thisBtn.parentNode.parentNode.parentNode.getAttribute('data-item')
+    postData('/add', addedTrips[index])
+}
+
+// Remove a saved destination
+const removeTrip = (thisBtn) => {
+    thisBtn.parentNode.parentNode.parentNode.parentNode.classList.hidden = true
+    thisBtn.parentNode.parentNode.parentNode.parentNode.remove()
+    const tripId = thisBtn.parentNode.parentNode.parentNode.getAttribute('data-item')
+    getData('/data')
+        .then((savedTrips) => {
+            savedTrips.forEach((trip, index) => {
+                if (trip.uid === tripId) {
+                    savedTrips.splice(index, 1)
+                    postData('/update', savedTrips)
+                }
+            })
         })
-    }
-    else {
-        appStart.hidden = false
-    }
-}
-
-// Save a trip
-const saveTrip = (index, obj) => {
-    addedTrips[index].action = 'save'
-    localStorage.setItem('temp', JSON.stringify(addedTrips))
-    obj.classList.add('hidden')
-    const controlBtns = obj.parentNode
-    controlBtns.getElementsByClassName('remove-btn')[0].classList.remove('hidden')
-    controlBtns.parentNode.getElementsByClassName('status hidden')[0].classList.remove('hidden')
-}
-
-// Remove a trip
-const removeTrip = (index, obj) => {
-    addedTrips[index].action = 'remove'
-    localStorage.setItem('temp', JSON.stringify(addedTrips))
-    obj.parentNode.parentNode.parentNode.parentNode.classList.hidden = true
-    obj.parentNode.parentNode.parentNode.parentNode.remove()
     const appStart = document.querySelector('.app-start')
     if (document.querySelectorAll('.destination').length === 0) {
         appStart.hidden = false

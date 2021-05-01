@@ -14,6 +14,7 @@ module.exports = {
     mode: 'development',
     devServer: {
         port: 8080,
+        contentBase: './dist',
     },
     devtool: 'source-map',
     stats: 'verbose',
