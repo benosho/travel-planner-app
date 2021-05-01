@@ -42,6 +42,7 @@ A Node.js travel planner app that creates profiles for planned travel destinatio
 - [sass-loader](https://www.npmjs.com/package/sass-loader)
 - [style-loader](https://www.npmjs.com/package/style-loader)
 - [terser-webpack-plugin](https://www.npmjs.com/package/terser-webpack-plugin)
+- [uuid](https://www.npmjs.com/package/uuid)
 - [webpack-dev-server](https://www.npmjs.com/package/webpack-dev-server)
 - [workbox-webpack-plugin](https://www.npmjs.com/package/workbox-webpack-plugin)
 
