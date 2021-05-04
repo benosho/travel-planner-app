@@ -189,7 +189,7 @@ const getFeaturedImg = async (cityName = '', countryName = '', url = 'https://pi
 }
 
 // Update UI with query results
-const updateUI = async (featuredImgURL ='', cityName, countryName, departureDate, daysToDeparture, daysToDeparture ='', weatherHiTemp, weatherLowTemp, weatherDesc, weatherIcon, ui, arrIndex = '') => {
+const updateUI = async (featuredImgURL ='', cityName, countryName, departureDate, daysToDeparture ='', weatherHiTemp, weatherLowTemp, weatherDesc, weatherIcon, ui, arrIndex = '') => {
     try {
         let uiContent = `<div class="featured-img"><img src="${featuredImgURL}" width="100%"></div>`
         uiContent += `<div class="trip-description"><span class="title">My trip to: ${cityName}, ${countryName}</span>`
@@ -246,6 +246,7 @@ const updateUI = async (featuredImgURL ='', cityName, countryName, departureDate
     }
 }
 
+// POST request to local server
 const postData = async (url = '', data = {}) => {
     const response = await axios.post(url, data)
     try {
@@ -256,6 +257,7 @@ const postData = async (url = '', data = {}) => {
     }
 }
 
+// GET request to local server
 const getData = async (url = '') => {
     const response = await axios.get(url)
     try {
