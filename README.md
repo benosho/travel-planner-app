@@ -7,7 +7,10 @@ A Node.js travel planner app that creates profiles for planned travel destinatio
     - Featured image of the city. Where this is not available a featured image of the country is displayed
     - Typical weather for the planned departure date where this is available
     - Countdown to the departure date
-- User can save or remove destinations from the planner
+- User can save or remove trips from the planner
+- Displays icons for each weather description
+- User can add, save and remove multiple trips
+- Saved trips are sorted by departure date with soonest trips on the top
 
 ## Development
 - Development environment e.g. Visual Studio Code
@@ -22,6 +25,7 @@ A Node.js travel planner app that creates profiles for planned travel destinatio
 ## Dependencies
 - [Node.js with npm](https://nodejs.org/)
 - [express](https://www.npmjs.com/package/express)
+- [axios](https://www.npmjs.com/package/axios)
 - [@fortawesome/fontawesome-free](https://www.npmjs.com/package/@fortawesome/fontawesome-free)
 - [spin.js](https://spin.js.org/)
 - [webpack](https://www.npmjs.com/package/webpack)
@@ -41,6 +45,7 @@ A Node.js travel planner app that creates profiles for planned travel destinatio
 - [sass](https://www.npmjs.com/package/sass)
 - [sass-loader](https://www.npmjs.com/package/sass-loader)
 - [style-loader](https://www.npmjs.com/package/style-loader)
+- [supertest](https://www.npmjs.com/package/supertest)
 - [terser-webpack-plugin](https://www.npmjs.com/package/terser-webpack-plugin)
 - [uuid](https://www.npmjs.com/package/uuid)
 - [webpack-dev-server](https://www.npmjs.com/package/webpack-dev-server)

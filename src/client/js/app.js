@@ -1,6 +1,8 @@
 /**
- * Load required modules
+ * Import required modules
  */
+
+const axios = require('axios').default
 
 // Load spin.js for animated progress indicator. Comment out when running Jest tests because of conflicts
 import { Spinner } from 'spin.js'
@@ -87,7 +89,7 @@ const toggleForm = () => {
     })
 }
 
-// Scroll page to the top of viewport when floating button is clicked:
+// Scroll page to the top of viewport when floating button is clicked
 function scrollToTopOnClick() {
     const scrollBtn = document.querySelector('#scroll-to-top')
     scrollBtn.hidden = true
@@ -110,42 +112,70 @@ function scrollToTopOnClick() {
 
 // GET request to GeoNames API
 const getCityCoord = async (cityName = '', url = 'https://secure.geonames.org/search?', apiID = process.env.API_ID_GEONAMES) => {
-    const apiResponse = await fetch(url + 'name_equals=' + cityName + '&type=json' + '&username=' + apiID)
     try {
-        const cityData = await apiResponse.json()
-        return cityData
+        const apiResponse = await axios.get(url + 'name_equals=' + cityName + '&type=json' + '&username=' + apiID)
+        const cityCoord = await apiResponse.data.geonames[0]
+        return cityCoord
     }
     catch (err) {
-        console.log('Error:', err.message)
+        console.log('Error: ', err.message)
     }
 }
 
-// GET request to Weatherbit API
-const getWeather = async (latVal = '', longVal = '', url = 'https://api.weatherbit.io/v2.0/forecast/daily?', apiKey = process.env.API_KEY_WEATHERBIT) => {
-    const apiResponse = await fetch(url + 'lat=' + latVal + '&lon=' + longVal + '&key=' + apiKey)
+// GET request to Weatherbit API for 16-day / daily forecasts (all weather variables)
+const getWeatherData = async (latVal = '', longVal = '', url = 'https://api.weatherbit.io/v2.0/forecast/daily?', apiKey = process.env.API_KEY_WEATHERBIT) => {
     try {
-        const weatherForecast = await apiResponse.json()
-        return weatherForecast
+        const apiResponse = await axios.get(url + 'lat=' + latVal + '&lon=' + longVal + '&key=' + apiKey)
+        const weatherArray = apiResponse.data.data
+        return weatherArray
     }
     catch (err) {
-        console.log('Error:', err.message)
+        console.log('Error: ', err.message)
     }
 }
 
-// GET requests to Pixabay API
+// Get weather for specific day
+const getWeather = (weatherArray, index) => {
+    try {
+        const weather = weatherArray[index]
+        const weatherSummary = {
+            high_temp: weather.high_temp,
+            low_temp: weather.low_temp,
+            description: weather.weather.description,
+            icon: weather.weather.icon
+        }
+        return weatherSummary
+    }
+    catch (err) {
+        console.log('Error: ', err.message)
+    }
+}
+
+// Wrap getWeather() in async function to improve performance with querying nested JSON objects
+const getWeatherSummary = async (weatherArray, index) => {
+    const weatherSummary = await getWeather(weatherArray, index)
+    try {
+        return weatherSummary
+    }
+    catch (err) {
+        console.log('Error: ', err.message)
+    }
+}
+
+// GET requests to Pixabay API - get featured image for entered city or country
 const getFeaturedImg = async (cityName = '', countryName = '', url = 'https://pixabay.com/api/?', apiKey = process.env.API_KEY_PIXABAY) => {
-    let apiResponse = await fetch(url + 'key=' + apiKey + '&q=' + encodeURIComponent(cityName + ' ' + countryName) + '&image_type=photo' + '&category=travel' + '&orientation=horizontal')
+    let image = await axios.get(url + 'key=' + apiKey + '&q=' + encodeURIComponent(cityName + ' ' + countryName) + '&image_type=photo' + '&category=travel' + '&orientation=horizontal')
     try {
-        const imageData = await apiResponse.json()
-        if (imageData.hits[0]) {
-            return imageData.hits[0].webformatURL
+        const arrLength = image.data.hits.length
+        if (arrLength > 0) {
+            return image.data.hits[0].webformatURL
         }
         else {
-            apiResponse = await fetch(url + 'key=' + apiKey + '&q=' + encodeURIComponent(countryName) + '&image_type=photo' + '&category=travel' + '&orientation=horizontal')
+            image = await axios.get(url + 'key=' + apiKey + '&q=' + encodeURIComponent(countryName) + '&image_type=photo' + '&category=travel' + '&orientation=horizontal')
             try {
-                const imageData = await apiResponse.json()
-                if (imageData.hits[0]) {
-                    return imageData.hits[0].webformatURL
+                const arrLength = image.data.hits.length
+                if (arrLength > 0) {
+                    return image.data.hits[0].webformatURL
                 }
             }
             catch (err) {
@@ -159,7 +189,7 @@ const getFeaturedImg = async (cityName = '', countryName = '', url = 'https://pi
 }
 
 // Update UI with query results
-const updateUI = async (featuredImgURL, cityName, countryName, departureDate, daysToDeparture, weatherForecast, ui, arrIndex = '') => {
+const updateUI = async (featuredImgURL ='', cityName, countryName, departureDate, daysToDeparture, daysToDeparture ='', weatherHiTemp, weatherLowTemp, weatherDesc, weatherIcon, ui, arrIndex = '') => {
     try {
         let uiContent = `<div class="featured-img"><img src="${featuredImgURL}" width="100%"></div>`
         uiContent += `<div class="trip-description"><span class="title">My trip to: ${cityName}, ${countryName}</span>`
@@ -186,9 +216,9 @@ const updateUI = async (featuredImgURL, cityName, countryName, departureDate, da
             uiContent += `<span class="countdown">${cityName}, ${countryName} was ${Math.abs(daysToDeparture)} day(s) <strong>ago</strong></span>`
         }
         uiContent += `<span class="weather">Typical weather for then is:</span>`
-        if (weatherForecast) {
-            uiContent += `<div class="weather-temp"><span class="high">High</span> ${weatherForecast.high_temp} <span class="low">Low</span> ${weatherForecast.low_temp}</div>
-            <div class="weather-description">${weatherForecast.weather.description}<img src="./media/${weatherForecast.weather.icon}.png" width="48px"></div>`
+        if (weatherDesc) {
+            uiContent += `<div class="weather-temp"><span class="high">High</span> ${weatherHiTemp} <span class="low">Low</span> ${weatherLowTemp}</div>
+            <div class="weather-description">${weatherDesc}<img src="./media/${weatherIcon}.png" width="48px"></div>`
         }
         else {
             uiContent += `<span class="no-weather"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> No forecast available at this time for your departure date</span>`
@@ -202,7 +232,7 @@ const updateUI = async (featuredImgURL, cityName, countryName, departureDate, da
             listItem.setAttribute('data-item', uuidv4())
         }
         else {
-            getData('/data')
+            getData('/data/save')
                 .then(data => {
                     listItem.setAttribute('data-item', data[arrIndex].uid)
                 })
@@ -216,34 +246,23 @@ const updateUI = async (featuredImgURL, cityName, countryName, departureDate, da
     }
 }
 
-// POST request to local server
 const postData = async (url = '', data = {}) => {
-    const response = await fetch(url, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
+    const response = await axios.post(url, data)
     try {
-        const data = await response.json();
-        return data;
+        return response
     }
     catch (err) {
-        console.log('ERROR:', err.message);
+        console.log('Error: ', err.message)
     }
 }
 
-// GET request to local server
 const getData = async (url = '') => {
-    const response = await fetch(url);
+    const response = await axios.get(url)
     try {
-        const data = await response.json();
-        return data;
+        return response.data
     }
     catch (err) {
-        console.log('Error:', err.message);
+        console.log('Error: ', err.message)
     }
 }
 
@@ -253,7 +272,6 @@ const getData = async (url = '') => {
 
 // Query external APIs for travel destinations
 const addTrip = () => {
-    let daysToDeparture = ''
     const addTripForm = document.querySelector('.add-trip-form')
     addTripForm.addEventListener('submit', (e) => {
         e.preventDefault()
@@ -262,30 +280,42 @@ const addTrip = () => {
         if (destinationCity && departureDate) {
             const spinner = uiSpinner()
             getCityCoord(destinationCity)
-                .then((coord) => {
-                    if (coord.geonames[0]) {
-                        getWeather(coord.geonames[0].lat, coord.geonames[0].lng)
-                            .then((weather) => {
-                                daysToDeparture = countDown(departureDate)
+                .then(coord => {
+                    if (coord) {
+                        getWeatherData(coord.lat, coord.lng)
+                            .then(weatherArray => {
+                                const daysToDeparture = countDown(departureDate)
                                 if (daysToDeparture <= 15) {
-                                    const weatherForecast = weather.data[daysToDeparture]
-                                    return weatherForecast
+                                    getWeatherSummary(weatherArray, daysToDeparture)
+                                        .then(weather => {
+                                            if (weather) {
+                                                getFeaturedImg(coord.name, coord.countryName)
+                                                    .then(featuredImgUrl => {
+                                                        if (featuredImgUrl) {
+
+                                                            // Use flat object to avoid "undefined" errors in nested objects
+                                                            addedTrips.push({ imgUrl: featuredImgUrl, city: coord.name, country: coord.countryName, departing: departureDate, countDown: daysToDeparture, high_temp: weather.high_temp, low_temp: weather.low_temp, weather_desc: weather.description, weather_icon: weather.icon })
+                                                            postData('/add', addedTrips[addedTrips.length - 1])
+
+                                                                .then((response) => {
+                                                                    console.log('POST Status: ', response.statusText)
+                                                                    getData('/data/add')
+                                                                        .then(data => {
+                                                                            console.log('GET Status: ', response.statusText)
+                                                                            updateUI(data.imgUrl, data.city, data.country, departureDate, data.daysToDeparture, data.high_temp, data.low_temp, data.weather_desc, data.weather_icon, { view: "unsaved" })
+                                                                                .then((data) => {
+                                                                                    const tripData = document.querySelector('.trip-data')
+                                                                                    tripData.appendChild(data)
+                                                                                    tripData.lastElementChild.scrollIntoView({ behavior: 'smooth' })
+                                                                                    spinner.stop()
+                                                                                })
+                                                                        })
+                                                                })
+                                                        }
+                                                    })
+                                            }
+                                        })
                                 }
-                            })
-                            .then((weatherForecast) => {
-                                getFeaturedImg(coord.geonames[0].name, coord.geonames[0].countryName)
-                                    .then((featuredImgURL) => {
-                                        if (featuredImgURL) {
-                                            addedTrips.push({ city: coord.geonames[0].name, country: coord.geonames[0].countryName, departing: departureDate, weather: weatherForecast })
-                                            updateUI(featuredImgURL, coord.geonames[0].name, coord.geonames[0].countryName, departureDate, daysToDeparture, weatherForecast, { view: "unsaved" })
-                                                .then((data) => {
-                                                    const tripData = document.querySelector('.trip-data')
-                                                    tripData.appendChild(data)
-                                                    tripData.lastElementChild.scrollIntoView({ behavior: 'smooth' })
-                                                    spinner.stop()
-                                                })
-                                        }
-                                    })
                             })
                     }
                     else {
@@ -302,17 +332,23 @@ const addTrip = () => {
 
 // Show saved destinations
 const showSavedTrips = async () => {
-    const savedTrips = await getData('/data')
+    const savedTrips = await getData('/data/save')
     try {
         const appStart = document.querySelector('.app-start')
         if (savedTrips.length > 0) {
             appStart.hidden = true
             const spinner = uiSpinner()
+
+            // sort destinations by departure date
+            savedTrips.sort(function (a, b) {
+                return new Date(b.departing).getTime() - new Date(b.departing).getTime()
+            })
+
             savedTrips.forEach((trip, index) => {
                 getFeaturedImg(trip.city, trip.country)
-                    .then((imgURL) => {
+                    .then((featuredImgUrl) => {
                         const daysToDeparture = countDown(trip.departing)
-                        updateUI(imgURL, trip.city, trip.country, trip.departing, daysToDeparture, trip.weather, { view: "saved" }, index)
+                        updateUI(featuredImgUrl, trip.city, trip.country, trip.departing, daysToDeparture, trip.high_temp, trip.low_temp, trip.weather_desc, trip.weather_icon, { view: "saved" }, index)
                             .then((data) => {
                                 const tripData = document.querySelector('.trip-data')
                                 tripData.appendChild(data)
@@ -337,7 +373,7 @@ const saveTrip = (index, thisBtn) => {
     const removeBtn = thisBtn.parentNode.getElementsByClassName('remove-btn')[0]
     removeBtn.classList.remove('hidden')
     addedTrips[index].uid = thisBtn.parentNode.parentNode.parentNode.getAttribute('data-item')
-    postData('/add', addedTrips[index])
+    postData('/save', addedTrips[index])
 }
 
 // Remove a saved destination
@@ -345,15 +381,10 @@ const removeTrip = (thisBtn) => {
     thisBtn.parentNode.parentNode.parentNode.parentNode.classList.hidden = true
     thisBtn.parentNode.parentNode.parentNode.parentNode.remove()
     const tripId = thisBtn.parentNode.parentNode.parentNode.getAttribute('data-item')
-    getData('/data')
-        .then((savedTrips) => {
-            savedTrips.forEach((trip, index) => {
-                if (trip.uid === tripId) {
-                    savedTrips.splice(index, 1)
-                    postData('/update', savedTrips)
-                }
-            })
-        })
+
+    // Post uid of trip to update endpoint
+    postData('/update', { uid: tripId })
+
     const appStart = document.querySelector('.app-start')
     if (document.querySelectorAll('.destination').length === 0) {
         appStart.hidden = false

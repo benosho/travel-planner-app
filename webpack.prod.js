@@ -19,7 +19,7 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
         port: 8080,
-      },
+    },
     mode: 'production',
     module: {
         rules: [

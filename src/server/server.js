@@ -1,4 +1,5 @@
 // Endpoint for all routes
+let addedTrips = []
 let savedTrips = []
 
 const path = require('path')
@@ -10,19 +11,18 @@ const open = require('open')
 const app = express()
 
 app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: false })) // Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 app.use(cors());
 
 app.use(express.static('dist'))
 
 app.get('/', function (req, res) {
-    // res.sendFile('dist/index.html')
-    res.sendFile(path.resolve('src/client/views/index.html'))
+    res.sendFile('dist/index.html')
 })
 
 //  Start the server on port 5000
 app.listen(process.env.PORT || 5000, function () {
-    console.log('Travel App listening on port 5000!')
+    console.log('Travel Planner App listening on port 5000!')
     open('http://127.0.0.1:5000')
 })
 
@@ -30,18 +30,41 @@ app.listen(process.env.PORT || 5000, function () {
  * Setup GET and POST request routes
  */
 
-// GET route - get saved trips
-app.get('/data', (request, response) => {
-    //savedTrips = []
+// GET route - added trips
+app.get('/data/add', (request, response) => {
+    response.send(addedTrips);
+})
+
+// GET route - saved trips
+app.get('/data/save', (request, response) => {
     response.send(savedTrips);
 })
 
-// POST route
+// POST route - add trips
 app.post('/add', (request, response) => {
-    savedTrips.push(request.body)
+    addedTrips = request.body
+    response.send('Success')
 })
 
-// POST route
-app.post('/update', (request, response) => {
-    savedTrips = request.body
+// POST route - save trips
+app.post('/save', (request, response) => {
+    savedTrips.push(request.body)
+    response.send('Success')
 })
+
+// POST route - remove saved trips
+app.post('/update', (request, response) => {
+    savedTrips.forEach((trip, index) => {
+        if (trip.uid === request.body.uid) {
+            savedTrips.splice(index, 1)
+            response.send('Success')
+        }
+    })
+})
+
+// POST route for testing Express server
+app.post('/express/test', (request, response) => {
+    response.send('Success')
+})
+
+module.exports = app
