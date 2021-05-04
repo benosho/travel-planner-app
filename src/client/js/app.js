@@ -5,7 +5,7 @@
 const axios = require('axios').default
 
 // Load spin.js for animated progress indicator. Comment out when running Jest tests because of conflicts
-import { Spinner } from 'spin.js'
+// import { Spinner } from 'spin.js'
 
 // Load UUID for unique ID generation
 const { v4: uuidv4 } = require('uuid')
