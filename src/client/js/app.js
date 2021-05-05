@@ -5,7 +5,7 @@
 const axios = require('axios').default
 
 // Load spin.js for animated progress indicator. Comment out when running Jest tests because of conflicts
-// import { Spinner } from 'spin.js'
+import { Spinner } from 'spin.js'
 
 // Load UUID for unique ID generation
 const { v4: uuidv4 } = require('uuid')
@@ -189,7 +189,7 @@ const getFeaturedImg = async (cityName = '', countryName = '', url = 'https://pi
 }
 
 // Update UI with query results
-const updateUI = async (featuredImgURL ='', cityName, countryName, departureDate, daysToDeparture ='', weatherHiTemp, weatherLowTemp, weatherDesc, weatherIcon, ui, arrIndex = '') => {
+const updateUI = async (featuredImgURL = '', cityName, countryName, departureDate, daysToDeparture = '', weatherHiTemp, weatherLowTemp, weatherDesc, weatherIcon, ui, arrIndex = '') => {
     try {
         let uiContent = `<div class="featured-img"><img src="${featuredImgURL}" width="100%"></div>`
         uiContent += `<div class="trip-description"><span class="title">My trip to: ${cityName}, ${countryName}</span>`
@@ -304,7 +304,7 @@ const addTrip = () => {
                                                                     getData('/data/add')
                                                                         .then(data => {
                                                                             console.log('GET Status: ', response.statusText)
-                                                                            updateUI(data.imgUrl, data.city, data.country, departureDate, data.daysToDeparture, data.high_temp, data.low_temp, data.weather_desc, data.weather_icon, { view: "unsaved" })
+                                                                            updateUI(data.imgUrl, data.city, data.country, data.departing, data.countDown, data.high_temp, data.low_temp, data.weather_desc, data.weather_icon, { view: "unsaved" })
                                                                                 .then((data) => {
                                                                                     const tripData = document.querySelector('.trip-data')
                                                                                     tripData.appendChild(data)
