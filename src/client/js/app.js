@@ -72,6 +72,7 @@ const toggleForm = () => {
         if (e.target === addTripToggle || e.target === addTripBtn || e.target === closeFormBtn) {
             addTripForm.classList.toggle('hidden')
             if (addTripForm.classList.contains('hidden')) {
+                appStart.hidden = true
                 addTripToggle.children[0].classList.add('fa-toggle-off')
                 addTripToggle.children[0].classList.remove('fa-toggle-on')
                 const result = document.querySelectorAll('.trip-data > ul > li')
@@ -309,6 +310,7 @@ const addTrip = () => {
                                                                                     const tripData = document.querySelector('.trip-data')
                                                                                     tripData.appendChild(data)
                                                                                     tripData.lastElementChild.scrollIntoView({ behavior: 'smooth' })
+                                                                                    document.querySelector('.app-start').hidden = true;
                                                                                     spinner.stop()
                                                                                 })
                                                                         })
