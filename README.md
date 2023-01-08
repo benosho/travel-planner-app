@@ -72,7 +72,7 @@ A Node.js travel planner app that creates profiles for planned travel destinatio
 http://localhost:5000
 
 ## Deployment
-The Travel Planner App is hosted for demonstration purposes at https://ngw-travel-planner-app.herokuapp.com/
+The Travel Planner App is hosted for demonstration purposes at https://clear-pink-iguana.cyclic.app/
 
 ## Release History
 - 1.0.0
